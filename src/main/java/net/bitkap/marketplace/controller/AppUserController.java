@@ -1,12 +1,17 @@
 package net.bitkap.marketplace.controller;
 
 import io.swagger.annotations.*;
+import net.bitkap.marketplace.maviance.AccessDetails;
+import org.maviance.s3pjavaclient.ApiClient;
+import org.maviance.s3pjavaclient.ApiException;
+import org.maviance.s3pjavaclient.api.HealthcheckApi;
+import org.maviance.s3pjavaclient.model.Ping;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api(value="AppUserController", description="Rest API for App User operations.")
+@Api(value="AppUserController")
 @RestController
 @CrossOrigin
 @RequestMapping(value = "/v1/user")
@@ -22,6 +27,17 @@ public class AppUserController {
     })
     @GetMapping(value="/test")
     public String testMethod(){
+        ApiClient apiClient = new ApiClient(AccessDetails.BASE_URL, AccessDetails.ACCESS_TOKEN, AccessDetails.ACCESS_SECRET);
+
+        HealthcheckApi checksApi = new HealthcheckApi(apiClient);
+
+        try {
+            Ping ping = checksApi.pingGet(AccessDetails.VERSION);
+            System.out.println(ping);
+        } catch (ApiException e) {
+            System.out.println("An error occurred: \n");
+            System.out.println(e.getResponseBody());
+        }
         return "test réussi!";
     }
 }
